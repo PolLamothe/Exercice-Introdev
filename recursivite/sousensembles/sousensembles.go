@@ -32,50 +32,37 @@ func getOcc(tab []int, value int) int {
 	return count
 }
 
-func isSame(big, small []int) bool {
-	for i := 0; i < len(big); i++ {
-		if big[i] != small[i] {
-			return false
+func recur(E, previous []int, length int) [][]int {
+	if len(E) == 0 {
+		return [][]int{}
+	}
+	var result [][]int = [][]int{}
+	if length == 4 && len(previous) == 3 {
+		fmt.Println(E, previous)
+	}
+	if len(previous) == length-1 {
+		for i := 0; i < len(E); i++ {
+			if length == 4 && len(previous) == 3 {
+				fmt.Println(result)
+			}
+			temp2 := append([]int(nil), previous...)
+			temp := append(temp2, E[i])
+			if length == 4 && len(previous) == 3 {
+				fmt.Println(result)
+			}
+			result = append(result, temp)
+			if length == 4 && len(previous) == 3 {
+				fmt.Println(result)
+			}
 		}
-	}
-	return true
-}
-
-func getIndex(tab []int, value int) int {
-	for i := 0; i < len(tab); i++ {
-		if tab[i] == value {
-			return i
-		}
-	}
-	return -1
-}
-
-func recur(E []int, current [][]int, size int) (PE [][]int, err error) {
-	fmt.Println(current, size)
-	if len(current[len(current)-1]) == 0 {
-		current = append(current, []int{E[0]})
-		return recur(E, current, size)
-	}
-	var array []int
-	if len(current[len(current)-1]) < 1 {
-		array = []int{}
 	} else {
-		array = current[len(current)-1][1:]
-	}
-	if isSame(array, E[len(E)-len(current[len(current)-1]):]) {
-		if size == len(E) {
-			return current, nil
-		}
-		return recur(E, append(current, []int{E[0]}), size+1)
-	} else {
-		if current[len(current)-1][len(current[len(current)-1])-1] == E[len(E)-1] {
-			current = append(current, []int{E[getIndex(E, current[len(current)-1][0])+1]})
-			return recur(E, current, size)
-		} else {
-			current[len(current)-1] = append(current[len(current)-1], E[getIndex(E, current[len(current)-1][len(current[len(current)-1])-1])+1])
-			return recur(E, current, size)
+		for i := 0; i < len(E); i++ {
+			result2 := recur(E[i+1:], append(previous, E[i]), length)
+			result = append(result, result2...)
 		}
 	}
+
+	return result
 }
 
 func sousEnsembles(E []int) (PE [][]int, err error) {
@@ -90,5 +77,10 @@ func sousEnsembles(E []int) (PE [][]int, err error) {
 			return nil, errPasEnsemble
 		}
 	}
-	return recur(E, [][]int{{}}, 1)
+	var result [][]int = [][]int{{}}
+	for i := 1; i <= len(E); i++ {
+		result = append(result, recur(E, []int{}, i)...)
+	}
+	fmt.Println(recur(E, []int{}, 4))
+	return result, nil
 }
