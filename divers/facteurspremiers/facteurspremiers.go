@@ -1,7 +1,5 @@
 package facteurspremiers
 
-import "fmt"
-
 /*
 La fonction facteursPremiers doit retourner un tableau contenant la liste de tous
 les facteurs premiers d'un entier n, doublons compris
@@ -17,33 +15,38 @@ faut retourner un tableau à zéro éléments.
 premiers(24) = [2 2 2 3] (l'ordre n'a pas d'importance)
 */
 
-func multiply(array []uint) int {
-	var result int = 1
-	for i := 0; i < len(array); i++ {
-		result *= int(array[i])
+func mypremiers(n int) (p []int) {
+	var result []int = []int{}
+	for i := 2; i < n; i++ {
+		var state bool = true
+		for x := 2; x < i; x++ {
+			if state {
+				if i%x == 0 {
+					state = false
+				}
+			}
+		}
+		if state {
+			result = append(result, i)
+		}
 	}
 	return result
 }
 
 func facteursPremiers(n uint) (facteurs []uint) {
-	var i uint = 2
-	if n == 1 {
-		return []uint{}
-	}
-	for ; i <= n; i++ {
-		if n%i == 0 {
-			var x uint = 2
-			var state bool = true
-			for ; x < i; x++ {
-				if i%x == 0 {
-					state = false
-				}
-			}
-			if state {
-				fmt.Println(n, i)
-				return append(facteursPremiers(n/i), i)
+	var premier []int = mypremiers(int(n) + 1)
+	var reste uint = n
+	var result []uint = []uint{}
+	var state bool = false
+	for reste > 1 {
+		for i := len(premier) - 1; i >= 0 && state; i-- {
+			if reste%uint(premier[i]) == 0 {
+				result = append(result, uint(premier[i]))
+				reste /= uint(premier[i])
+				state = false
 			}
 		}
+		state = true
 	}
-	return []uint{}
+	return result
 }
