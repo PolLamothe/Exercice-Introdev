@@ -20,6 +20,32 @@ sequences(3, 3) = [[1 2 3]]
 2023-2024, test 2, exercice 9
 */
 
+func recur(E, previous []int, length int) [][]int {
+	if len(E) == 0 {
+		return [][]int{}
+	}
+	var result [][]int = [][]int{}
+	if len(previous) == length-1 {
+		for i := 0; i < len(E); i++ {
+			temp2 := append([]int(nil), previous...)
+			temp := append(temp2, E[i])
+			result = append(result, temp)
+		}
+	} else {
+		for i := 0; i < len(E); i++ {
+			result2 := recur(E[i+1:], append(previous, E[i]), length)
+			result = append(result, result2...)
+		}
+	}
+
+	return result
+}
+
 func sequences(k, n int) (seq [][]int) {
-	return
+	var E []int = []int{}
+	for i := 1; i <= n; i++ {
+		E = append(E, i)
+	}
+	seq = recur(E, []int{}, k)
+	return seq
 }
