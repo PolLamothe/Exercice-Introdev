@@ -1,7 +1,5 @@
 package huitreines
 
-import "fmt"
-
 /*
 Le problème des huit reines consiste à placer, sur un échiquier (un tableau de 8 cases par 8 cases), 8 reines, de telle sorte
 qu'aucune d'entre-elles ne soit en position d'en manger une autre (c'est à dire de telle sorte qu'il n'y ait pas deux reines sur la
@@ -34,107 +32,128 @@ des reines dans une solution du problème des n reines (si elle existe)
 huitreines(4) = [[0 1 0 0] [0 0 0 1] [1 0 0 0] [0 0 1 0]] (solution non unique) (c'est horizontale)
 */
 
-func getRowAndColumn(plateau [][]int, index int) (row, column int) {
-	var columnCount int = 0
-	var rowCount int = index
-	for i := 0; i < len(plateau[index]); i++ {
-		if plateau[index][i] == 1 {
-			columnCount = i
+func checkDiag(plat [][]int, n, x, y int) bool {
+	for i := -n; i < n; i++ {
+		if i != 0 {
+			if x+i >= 0 && x+i < n {
+				if y+i >= 0 && y+i < n {
+					if plat[y+i][x+i] == 1 {
+						return false
+					}
+				}
+				if y-i >= 0 && y-i < n {
+					if plat[y-i][x+i] == 1 {
+						return false
+					}
+				}
+			}
+			if x-i >= 0 && x-i < n {
+				if y+i >= 0 && y+i < n {
+					if plat[y+i][x-i] == 1 {
+						return false
+					}
+				}
+				if y-i >= 0 && y-i < n {
+					if plat[y-i][x-i] == 1 {
+						return false
+					}
+				}
+			}
 		}
 	}
-	return rowCount, columnCount
+	return true
 }
 
-func checkCoordonate(plateau [][]int, row, column int) bool {
-	if plateau[row][column] == 1 {
-		return true
-	}
-	return false
-}
-
-func checkColumn(plateau [][]int, index int) bool { //retourne false si il y'a une reine sur la colone
-	row, column := getRowAndColumn(plateau, index)
-	for i := 0; i < len(plateau); i++ {
-		if plateau[i][column] == 1 && i != row {
+func isRight(plateua [][]int, n int) bool {
+	var plat = append([][]int{}, plateua...)
+	for i := 0; i < len(plat); i++ {
+		var queenCount = 0
+		if len(plat[i]) != n {
+			return false
+		}
+		for x := 0; x < len(plat[i]); x++ {
+			if plat[i][x] == 1 {
+				queenCount++
+			}
+		}
+		if queenCount != 1 {
 			return false
 		}
 	}
-	return true
-}
-
-func checkDiag(plateau [][]int, index int) bool { // retourn false si il y'a quelqu'un dans la diago
-	row, column := getRowAndColumn(plateau, index)
-	var yessir bool = true
-	i := 1
-	for yessir {
-		if row-i >= 0 && column-i >= 0 {
-			if checkCoordonate(plateau, row-1, column-1) {
-				return false
+	for i := 0; i < len(plat); i++ {
+		var queenCount int = 0
+		for x := 0; x < len(plat[i]); x++ {
+			if plat[x][i] == 1 {
+				queenCount++
 			}
 		}
-		if row+i < len(plateau) && column-i >= 0 {
-			if checkCoordonate(plateau, row+1, column-1) {
-				return false
-			}
-		}
-		if row-i >= 0 && column+i < len(plateau[0]) {
-			if checkCoordonate(plateau, row-1, column+1) {
-				return false
-			}
-		}
-		if row+i < len(plateau) && column+i < len(plateau[0]) {
-			if checkCoordonate(plateau, row+1, column+1) {
-				return false
-			}
-		}
-		i++
-		if i == len(plateau) {
-			yessir = false
+		if queenCount != 1 {
+			return false
 		}
 	}
-	return true
-}
-
-func reverse(plateau [][]int) {
-
-}
-
-func recur(plateau [][]int, n, index, count int) (result [][]int, ok bool) {
-	fmt.Println(plateau)
-	var current []int = make([]int, n)
-	if n == 1 {
-		return [][]int{{1}}, true
-	} else {
-		if count == 0 {
-			current[1] = 1
-			plateau = append(plateau, current)
-			return recur(plateau, n, 1, count+1)
-		} else {
-			if count == n {
-				return plateau, true
-			}
-			var valid bool = false
-			//for i := 0;i<
-			for i := 0; i < len(plateau[0]); i++ {
-				var tempPlateau [][]int = plateau
-				var add []int = make([]int, n)
-				add[i] = 1
-				tempPlateau = append(tempPlateau, add)
-				if checkColumn(tempPlateau, index) && checkDiag(tempPlateau, index) {
-					plateau = tempPlateau
-					valid = true
-					return recur(plateau, n, index+1, count+1)
+	for i := 0; i < n && len(plat) > 1; i++ {
+		for x := 0; x < n; x++ {
+			if plat[i][x] == 1 {
+				if !checkDiag(plat, n, x, i) {
+					return false
 				}
 			}
-			if !valid {
-				return nil, false
-			}
 		}
 	}
-	return nil, false
+	return true
+}
+
+func recur(previous [][]int, n int) (plateau [][]int, ok bool) { //je ne peux pas utiliser de "vrai" fonction récurcive car sinon il y'a un overflow a partir de n = 9
+	var plat = append([][]int{}, previous...)
+	for {
+		for i := 0; i < n; i++ {
+			var queenPos int = 0
+			for x := 0; x < n; x++ {
+				if plat[i][x] == 1 {
+					queenPos = x
+					break
+				}
+			}
+			if queenPos < n-1 {
+				var copy []int = append([]int{}, plat[i]...)
+				copy[queenPos] = 0
+				copy[queenPos+1] = 1
+				plat[i] = copy
+				break
+			} else {
+				var state bool = true
+				for i := 0; i < n; i++ {
+					if plat[i][n-1] != 1 {
+						state = false
+					}
+				}
+				if state {
+					return plat, false
+				}
+				var copy []int = append([]int{}, plat[i]...)
+				copy[queenPos] = 0
+				copy[0] = 1
+				plat[i] = copy
+			}
+		}
+		if isRight(plat, n) {
+			return plat, true
+		}
+	}
+	return
 }
 
 func huitreines(n int) (plateau [][]int, ok bool) {
-
-	return recur([][]int{}, n, 0, 0)
+	if n == 1 {
+		return [][]int{{1}}, true
+	}
+	var tab []int = []int{1}
+	for i := 1; i < n; i++ {
+		tab = append(tab, 0)
+	}
+	var tabtab [][]int
+	for i := 0; i < n; i++ {
+		tabtab = append(tabtab, tab)
+	}
+	return recur(tabtab, n)
 }

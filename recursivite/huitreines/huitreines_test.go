@@ -5,6 +5,28 @@ import (
 	"testing"
 )
 
+func TestRight(t *testing.T) {
+	var plat = [][]int{{1}}
+	if !isRight(plat, 1) {
+		t.Fail()
+	}
+	plat = [][]int{{0, 1}, {1, 0}}
+	if isRight(plat, 2) {
+		t.Fail()
+	}
+	plat = [][]int{{1, 0}, {0, 1}}
+	if isRight(plat, 2) {
+		t.Fail()
+	}
+}
+
+func TestRight2(t *testing.T) {
+	plat := [][]int{{0, 0, 1, 0}, {1, 0, 0, 0}, {0, 0, 0, 1}, {0, 1, 0, 0}}
+	if !isRight(plat, 4) {
+		t.Fail()
+	}
+}
+
 func TestPasSolution1(t *testing.T) {
 	_, ok := huitreines(2)
 	if ok {
@@ -26,21 +48,16 @@ func TestSolution1(t *testing.T) {
 	}
 }
 
-func TestColumn(t *testing.T) {
-	var plateau [][]int = [][]int{{0, 1, 0, 0}, {0, 1, 0, 0}}
-	fmt.Println(checkDiag(plateau, 1))
-}
-
-func TestPerso(t *testing.T) {
-	fmt.Println(huitreines(9))
-	/*var myPlateau [][]int = [][]int{{0, 1, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 1}, {1, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 1, 0}, {0, 0, 1, 0, 0, 0}, {0, 0, 0, 1, 0, 0}}
-	fmt.Println(checkDiag(myPlateau, 5))*/
+func TestSolution3(t *testing.T) {
+	_, ok := huitreines(4)
+	if !ok {
+		t.Fail()
+	}
 }
 
 func TestSolution2(t *testing.T) {
 	for n := 4; n <= 10; n++ {
 		sol, ok := huitreines(n)
-		fmt.Println(ok)
 		if !ok {
 			t.Fail()
 		} else if !bonnesDimensions(sol, n) {
@@ -50,6 +67,7 @@ func TestSolution2(t *testing.T) {
 		} else if !estSansConflits(sol) {
 			t.Fail()
 		}
+		fmt.Println(n, "passé")
 	}
 }
 
