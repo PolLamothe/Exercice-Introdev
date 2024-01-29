@@ -1,5 +1,7 @@
 package ateddybearpicnic
 
+import "fmt"
+
 /*
 On considère le jeu suivant avec des ours en peluche.
 
@@ -24,5 +26,24 @@ La fonction winnable doit dire si, pour un nombre d'ours reçu en début de part
 */
 
 func bears(numReceived uint) (winnable bool) {
-	return
+	fmt.Println(numReceived)
+	var state bool = false
+	if numReceived == 42 {
+		return true
+	}
+	if numReceived < 42 {
+		return false
+	}
+	if numReceived%2 == 0 {
+		state = state || bears(numReceived/2)
+	}
+	if numReceived%5 == 0 {
+		state = state || bears(numReceived-42)
+	}
+	if numReceived%3 == 0 || numReceived%4 == 0 {
+		if ((numReceived%100)/10)*(numReceived%10) != 0 {
+			state = state || bears(numReceived-(((numReceived%100)/10)*(numReceived%10)))
+		}
+	}
+	return state
 }
