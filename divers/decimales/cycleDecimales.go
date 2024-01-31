@@ -35,67 +35,56 @@ trouveCycle(7, 11) = 63
 2022-2023, test 1, exercice 9 (dans le test il n'était pas demandé de traiter les cas d'erreur)
 */
 
-func recur(init, treated []string, index, count int) bool {
-	if init[index] == treated[count] {
-		if len(treated) == count+1 {
-			return true
-		} else {
-			return recur(init, treated, index+1, count+1)
-		}
-	} else {
-		return false
-	}
-
-}
-
-func deleteLast(array []string) []string {
-	var result []string
-	for i := 0; i < len(array)-1; i++ {
-		result = append(result, array[i])
-	}
-	return result
-}
-
 func trouveCycle(x, y uint) (cycle uint, err error) {
-	var number float64 = float64(x) / float64(y)
-	var string2 string = strconv.FormatFloat(number, 'f', -1, 64)
-	var string3 []string = strings.Split(string2, "")
-	var treated []string
-	fmt.Println(string3)
-	for x := 0; x < len(string3); x++ {
-		for i := 2; i < len(string3)-x; i++ {
-			fmt.Println(treated)
-			i = i + x
-			if len(treated) == 0 {
-				if string3[i] != "0" {
-					treated = append(treated, string3[i])
+	flotant := fmt.Sprintf("%v", float64(x)/float64(y))
+	fmt.Println(flotant, x, y)
+	if len(strings.Split(flotant, ".")) == 2 {
+		flotant = strings.Split(flotant, ".")[1]
+	} else {
+		flotant = "0"
+	}
+	var deleted int = 1
+	if flotant[0] == '0' {
+		deleted--
+	}
+	flotant = flotant[:len(flotant)-1]
+	init := flotant
+	var repeating bool = true
+	for len(flotant) > 0 {
+		var result []byte = []byte{flotant[0]}
+		fmt.Println(flotant)
+		for i := 1; i < len(flotant); i++ {
+			fmt.Println(result, i)
+			if flotant[i] == result[0] {
+				var state bool = true
+				for x := 0; x < len(result) && x+i < len(flotant); x++ {
+					fmt.Println(string(result[x]), string(flotant[i+x]))
+					if result[x] != flotant[i+x] {
+						state = false
+					}
+				}
+				if !state {
+					result = append(result, flotant[i])
+				} else {
+					i = i + len(result) - 1
 				}
 			} else {
-				if string3[i] == treated[0] {
-					fmt.Println(string3[i])
-					fmt.Println(recur(string3, treated, i, 0))
-					if recur(string3, treated, i, 0) {
-						for j := len(treated) - 1; j >= 0; j-- {
-							if treated[j] == "0" {
-								treated = deleteLast(treated)
-							} else {
-								break
-							}
-						}
-						value, _ := strconv.ParseUint(strings.Join(treated, ""), 10, 64)
-						return uint(value), nil
-					} else {
-						treated = append(treated, string3[i])
-					}
-				} else {
-					treated = append(treated, string3[i])
-				}
+				fmt.Println("ryoki tenkai")
+				result = []byte(flotant[:i+1])
 			}
 		}
-		if x == 18 {
-			return 0, errCycleTropLong
+		if len(result) != len(flotant) || !repeating {
+			if len(flotant) >= 18 {
+				return 0, errCycleTropLong
+			}
+			value, _ := strconv.Atoi(string(result))
+			return uint(value), nil
+		} else if deleted >= 3 {
+			repeating = false
+			flotant = init
 		}
-		treated = []string{}
+		flotant = flotant[1:]
+		deleted++
 	}
 	return 0, errCycleTropLong
 }
