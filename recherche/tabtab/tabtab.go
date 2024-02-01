@@ -22,6 +22,19 @@ de tableaux.
 compte(0, [][]int{[]int{0, 1}, []int{0, 0, 0}}) = 4
 */
 func compte(n int, tab [][]int) (num int, err error) {
-
-	return num, err
+	if tab == nil {
+		return 0, errPasTabTab
+	}
+	var count int = 0
+	for i := 0; i < len(tab); i++ {
+		if tab[i] == nil {
+			return 0, errPasTabTab
+		}
+		for x := 0; x < len(tab[i]); x++ {
+			if tab[i][x] == n {
+				count++
+			}
+		}
+	}
+	return count, nil
 }
